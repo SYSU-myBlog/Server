@@ -25,6 +25,15 @@ type User struct {
 	UserStatus UserStatus  `bson:"userStatus"`
 }
 
+//未注册用户没有Id
+type User_notRegistered struct {
+	Username string	  `bson:"username"`
+	Email string	`bson:"email"`
+	Password string		`bson:"password"`
+	Phone string	`bson:"phone"`
+	UserStatus UserStatus  `bson:"userStatus"`
+}
+
 // GetUsers 获取所有用户
 func (m *UserModel) GetUsers() (users []User, err error) {
 	err = m.DB.Find(nil).All(&users)
