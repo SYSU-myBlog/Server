@@ -30,7 +30,6 @@ func initDB() {
 func main() {
 	//连接数据库
 	initDB()
-	
 
 	//开启服务器
 	r := gee.New()
@@ -38,11 +37,17 @@ func main() {
 		c.HTML(http.StatusOK, "<h1>Welcome to the main page of myBlog!!!</h1>")
 	})
 
-	v2 := r.Group("/user")
+	user := r.Group("/user")
 	{
-		v2.POST("/register", App.RegisterUser)
+		user.POST("/register", App.RegisterUser)
 
-		v2.POST("/login",  App.LoginUser)
+		user.POST("/login",  App.LoginUser)
+
+		user.GET("/:uid", App.GetUserByUid)
+
+		user.POST("/:uid", App.ModifyUserByUid)
+
+		user.GET("/:username", App.GetUserByUsername)
 	}
 	
 	r.Run(":9999")

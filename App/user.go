@@ -1,7 +1,7 @@
 package App
 
 import (
-	"errors"
+	//"errors"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"gee"
@@ -22,7 +22,7 @@ const (
 )
 
 type User struct {
-	Id bson.ObjectId   `bson:"_id"`
+	Id string   `bson:"_id"`
 	Username string	  `bson:"username"`
 	Email string	`bson:"email"`
 	Password string		`bson:"password"`
@@ -36,6 +36,13 @@ type User_notRegistered struct {
 	Username string	  `bson:"username"`
 	Password string		`bson:"password"`
 }
+
+// //非本人只能查看以下信息
+// type OtherUser struct {
+// 	Username string	  `bson:"username"`
+// 	Email string	`bson:"email"`
+// 	UserStatus UserStatus  `bson:"userStatus"`
+// }
 
 var (
 	MyuserModel *UserModel
@@ -97,19 +104,79 @@ func LoginUser (c *gee.Context) {
 	}
 }
 
-// GetUsers 获取所有用户
-func (m *UserModel) GetUsers() (users []User, err error) {
-	err = m.DB.Find(nil).All(&users)
-	return
+// GetUserByID 根据ID查询用户
+func GetUserByUid (c *gee.Context) {
+	tmpUser := User{}
+	MyuserModel.DB.FindId(bson.ObjectIdHex(c.Param("uid"))).One(&tmpUser)
+	hexid := fmt.Sprintf("%x", string(tmpUser.Id))
+	if (hexid == "") {
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 400,
+			Type: "fail",
+			Message:  "user id does not exist",
+		})
+	} else {
+		tmpUser.Id = fmt.Sprintf("%x", string(tmpUser.Id))
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 200,
+			Type: "success",
+			Message:  &tmpUser,
+		})
+	}
 }
 
-// GetUserByID 根据ID查询用户
-func (m *UserModel) GetUserByID(id string) (user User, err error) {
-	if !bson.IsObjectIdHex(id) {
-		err = errors.New("not_id")
-		return
+// 根据用户名查询用户
+func GetUserByUsername (c *gee.Context) {
+	tmpUser := User{}
+	MyuserModel.DB.Find(bson.M{"username": c.Param("username")}).One(&tmpUser)
+	hexid := fmt.Sprintf("%x", string(tmpUser.Id))
+	if (hexid == "") {
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 400,
+			Type: "fail",
+			Message:  "user does not exist",
+		})
+	} else {
+		tmpUser.Id = fmt.Sprintf("%x", string(tmpUser.Id))
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 200,
+			Type: "success",
+			Message:  &tmpUser,
+		})
 	}
-	err = m.DB.FindId(bson.ObjectIdHex(id)).One(&user)
-	return
+}
+
+
+//修改用户信息
+func ModifyUserByUid (c *gee.Context) {
+	//解析post的数据存到postUser内
+	con,_ := ioutil.ReadAll(c.Req.Body) //获取post的数据
+	postUser := User{}
+	json.Unmarshal(con, &postUser)
+
+	tmpUser := User{}
+	MyuserModel.DB.FindId(bson.ObjectIdHex(c.Param("uid"))).One(&tmpUser)
+	hexid := fmt.Sprintf("%x", string(tmpUser.Id))
+	if (hexid == "") {
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 400,
+			Type: "fail",
+			Message:  "user does not exist",
+		})
+	} else {
+		//更新
+		MyuserModel.DB.Update(bson.M{"_id": bson.ObjectIdHex(c.Param("uid"))}, bson.M{"$set": bson.M{
+			"username": postUser.Username,
+			"email": postUser.Email,
+			"password": postUser.Password,
+			"phone": postUser.Phone,
+		}})
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 200,
+			Type: "success",
+			Message:  "modify user success",
+		})
+	}
+	
 }
 
