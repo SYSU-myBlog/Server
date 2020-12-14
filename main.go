@@ -49,55 +49,27 @@ func main() {
 
 		user.PUT("/:uid", App.ModifyUserByUid)
 
-		
 	}
-	// router.Run()
-	// // Simple group: v2
-	// v2 := router.Group("/v2")
-	// {
-	// 	v2.POST("/login", loginEndpoint)
-	// 	v2.POST("/submit", submitEndpoint)
-	// 	v2.POST("/read", readEndpoint)
-	// }
 
-	
-	// r := gee.New()
-	// r.GET("/", func(c *gee.Context) {
-	// 	c.HTML(http.StatusOK, "<h1>Welcome to the main page of myBlog!!!</h1>")
-	// })
+	article := r.Group("/article")
+	{
+		article.POST("/publish", App.PublishArticle)
 
-	// user := r.Group("/user")
-	// {
-	// 	user.POST("/register", App.RegisterUser)
+		article.DELETE("/:aid", App.DeleteArticleByAid)
 
-	// 	user.POST("/login",  App.LoginUser)
+		article.PUT("/:aid", App.ModifyArticleByAid)
 
-	// 	user.GET("/:uid", App.GetUserByUid)
+		article.GET("/all", App.GetAllArticles)
 
-	// 	user.POST("/:uid", App.ModifyUserByUid)
+		article.GET("/aid/:aid", App.GetArticleByAid)
 
-	// 	user.GET("/username/:username", App.GetUserByUsername)
-	// }
+		article.GET("/title/:title", App.GetArticlesByTitle)
 
-	// article := r.Group("/article")
-	// {
-	// 	article.POST("/publish", App.PublishArticle)
+		article.GET("/tag/:tag", App.GetArticlesByTag)
 
-	// 	article.GET("/delete/:aid", App.DeleteArticleByAid)
+		article.GET("/publisher/:publisher", App.GetArticlesByPublisher)
 
-	// 	article.POST("/:aid", App.ModifyArticleByAid)
-
-	// 	article.GET("/all", App.GetAllArticles)
-
-	// 	article.GET("/:aid", App.GetArticleByAid)
-
-	// 	//article.GET("/title/:title", App.GetArticlesByTitle)
-
-	// 	article.GET("/tag/:tag", App.GetArticlesByTag)
-
-	// 	// article.GET("/publisher/:publisher", App.GetArticlesByPublisher)
-
-	// }
+	}
 	
 	r.Run(":9999")
 }

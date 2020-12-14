@@ -2,12 +2,13 @@ package App
 
 import (
 	"github.com/globalsign/mgo"
-	// "github.com/globalsign/mgo/bson"
-	// "encoding/json"
-	// "io/ioutil"
-	// "fmt"
-	// "net/http"
-	// "time"
+	"github.com/globalsign/mgo/bson"
+	"encoding/json"
+	"io/ioutil"
+	"fmt"
+	"net/http"
+	"time"
+	"github.com/gin-gonic/gin"
 )
 
 type Article struct {
@@ -35,9 +36,9 @@ type ArticleModel struct {
 var (
 	MyarticleModel *ArticleModel
 )
-/*
+
 //获取所有文章
-func GetAllArticles(c *gee.Context) {
+func GetAllArticles(c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(nil).All(&articles)
 	c.JSON(http.StatusOK, &ApiResponse {
@@ -48,9 +49,9 @@ func GetAllArticles(c *gee.Context) {
 }
 
 //发表一篇文章
-func PublishArticle(c *gee.Context) {
+func PublishArticle(c *gin.Context) {
 	//解析post的数据存到postArticle内
-	con,_ := ioutil.ReadAll(c.Req.Body) //获取post的数据
+	con,_ := ioutil.ReadAll(c.Request.Body) //获取post的数据
 	postArticle := Article_notPublished{}
 	json.Unmarshal(con, &postArticle)
 
@@ -70,7 +71,7 @@ func PublishArticle(c *gee.Context) {
 }
 
 //根据Id查找一篇文章
-func GetArticleByAid(c *gee.Context) {
+func GetArticleByAid(c *gin.Context) {
 	tmpArticle := Article{}
 	MyarticleModel.DB.FindId(bson.ObjectIdHex(c.Param("aid"))).One(&tmpArticle)
 	hexid := fmt.Sprintf("%x", string(tmpArticle.Aid))
@@ -90,7 +91,7 @@ func GetArticleByAid(c *gee.Context) {
 }
 
 // 根据标题查找文章
-func GetArticlesByTitle (c *gee.Context) {
+func GetArticlesByTitle (c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(bson.M{"title": c.Param("title")}).All(&articles)
 	c.JSON(http.StatusOK, &ApiResponse {
@@ -101,7 +102,7 @@ func GetArticlesByTitle (c *gee.Context) {
 }
 
 // 根据标签查找文章
-func GetArticlesByTag (c *gee.Context) {
+func GetArticlesByTag (c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(bson.M{"tag": c.Param("tag")}).All(&articles)
 	c.JSON(http.StatusOK, &ApiResponse {
@@ -112,7 +113,7 @@ func GetArticlesByTag (c *gee.Context) {
 }
 
 // 根据用户名查找文章
-func GetArticlesByPublisher (c *gee.Context) {
+func GetArticlesByPublisher (c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(bson.M{"publisher": c.Param("publisher")}).All(&articles)
 	c.JSON(http.StatusOK, &ApiResponse {
@@ -125,7 +126,7 @@ func GetArticlesByPublisher (c *gee.Context) {
 
 
 //根据Id删除一篇文章
-func DeleteArticleByAid (c *gee.Context) {
+func DeleteArticleByAid (c *gin.Context) {
 	tmpArticle := Article{}
 	MyarticleModel.DB.FindId(bson.ObjectIdHex(c.Param("aid"))).One(&tmpArticle)
 	hexid := fmt.Sprintf("%x", string(tmpArticle.Aid))
@@ -146,9 +147,9 @@ func DeleteArticleByAid (c *gee.Context) {
 }
 
 //根据Id修改一篇文章
-func ModifyArticleByAid (c *gee.Context) {
+func ModifyArticleByAid (c *gin.Context) {
 	//解析post的数据存到postUser内
-	con,_ := ioutil.ReadAll(c.Req.Body) //获取post的数据
+	con,_ := ioutil.ReadAll(c.Request.Body) //获取post的数据
 	postArticle := Article{}
 	json.Unmarshal(con, &postArticle)
 
@@ -195,4 +196,3 @@ func ModifyArticleByAid (c *gee.Context) {
 		
 	
 }
-*/
