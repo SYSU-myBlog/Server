@@ -6,3 +6,7 @@ type ApiResponse struct {
 	Type string  `bson:"type"`
 	Message interface{}  `bson:"message"`
 }
+
+type ObjectID struct {
+	Id string
+}

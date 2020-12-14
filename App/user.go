@@ -4,11 +4,11 @@ import (
 	//"errors"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	"gee"
 	"encoding/json"
 	"io/ioutil"
 	"fmt"
 	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type UserModel struct {
@@ -49,9 +49,9 @@ var (
 )
 
 //用户注册
-func RegisterUser(c *gee.Context) {
+func RegisterUser(c *gin.Context) {
 	//解析post的数据存到postUser内
-	con,_ := ioutil.ReadAll(c.Req.Body) //获取post的数据
+	con,_ := ioutil.ReadAll(c.Request.Body) //获取post的数据
 	postUser := User_notRegistered{}
 	json.Unmarshal(con, &postUser)
 
@@ -79,9 +79,9 @@ func RegisterUser(c *gee.Context) {
 }
 
 //用户登陆
-func LoginUser (c *gee.Context) {
+func LoginUser (c *gin.Context) {
 	//解析post的数据存到postUser内
-	con,_ := ioutil.ReadAll(c.Req.Body) //获取post的数据
+	con,_ := ioutil.ReadAll(c.Request.Body) //获取post的数据
 	postUser := User{}
 	json.Unmarshal(con, &postUser)
 
@@ -99,13 +99,15 @@ func LoginUser (c *gee.Context) {
 		c.JSON(http.StatusOK, &ApiResponse {
 			Code: 200,
 			Type: "success",
-			Message:  "login success.",
+			Message:  &ObjectID {
+				Id: hexid,
+			},
 		})
 	}
 }
 
 // GetUserByID 根据ID查询用户
-func GetUserByUid (c *gee.Context) {
+func GetUserByUid (c *gin.Context) {
 	tmpUser := User{}
 	MyuserModel.DB.FindId(bson.ObjectIdHex(c.Param("uid"))).One(&tmpUser)
 	hexid := fmt.Sprintf("%x", string(tmpUser.Id))
@@ -126,7 +128,7 @@ func GetUserByUid (c *gee.Context) {
 }
 
 // 根据用户名查询用户
-func GetUserByUsername (c *gee.Context) {
+func GetUserByUsername (c *gin.Context) {
 	tmpUser := User{}
 	MyuserModel.DB.Find(bson.M{"username": c.Param("username")}).One(&tmpUser)
 	hexid := fmt.Sprintf("%x", string(tmpUser.Id))
@@ -148,9 +150,9 @@ func GetUserByUsername (c *gee.Context) {
 
 
 //修改用户信息
-func ModifyUserByUid (c *gee.Context) {
+func ModifyUserByUid (c *gin.Context) {
 	//解析post的数据存到postUser内
-	con,_ := ioutil.ReadAll(c.Req.Body) //获取post的数据
+	con,_ := ioutil.ReadAll(c.Request.Body) //获取post的数据
 	postUser := User{}
 	json.Unmarshal(con, &postUser)
 
