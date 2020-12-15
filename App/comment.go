@@ -18,7 +18,7 @@ type CommentModel struct {
 type Comment struct {
 	Cid string   `bson:"_id"`
 	Message string `bson:"content"`//评论内容
-	Publisher string `bson:"comment"`//评论者用户名
+	Publisher string `bson:"publisher"`//评论者用户名
 	ContentId string `bson:"id"` //评论的（文章或评论）的ID
 }
 
@@ -26,7 +26,7 @@ type Comment struct {
 //评论发布前没有Id
 type Comment_notPublished struct {
 	Message string `bson:"content"`//评论内容
-	Publisher string `bson:"comment"`//评论者用户名
+	Publisher string `bson:"publisher"`//评论者用户名
 	ContentId string `bson:"id"` //评论的（文章或评论）的ID
 }
 
