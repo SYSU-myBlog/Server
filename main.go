@@ -30,6 +30,9 @@ func initDB() {
 	App.MycommentModel  = &App.CommentModel {
 		DB: session.DB("myblog").C("comment"),
 	}
+	App.MylikeModel  = &App.LikeModel {
+		DB: session.DB("myblog").C("like"),
+	}
 }
 
 func main() {
@@ -83,6 +86,13 @@ func main() {
 		comment.PUT("/:id", App.ModifyCommentByCid)
 
 		comment.DELETE("/:id", App.DeleteCommentByCid)
+	}
+
+	like := r.Group("/like")
+	{
+		like.POST("/likeit", App.LikeIt)
+
+		like.DELETE("/:lid", App.UnlikeIt)
 	}
 	
 	r.Run(":9999")
