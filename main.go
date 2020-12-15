@@ -27,6 +27,9 @@ func initDB() {
 	App.MyarticleModel = &App.ArticleModel {
 		DB: session.DB("myblog").C("article"),
 	}
+	App.MycommentModel  = &App.CommentModel {
+		DB: session.DB("myblog").C("comment"),
+	}
 }
 
 func main() {
@@ -69,6 +72,17 @@ func main() {
 
 		article.GET("/publisher/:publisher", App.GetArticlesByPublisher)
 
+	}
+
+	comment := r.Group("/comment")
+	{
+		comment.POST("/publish", App.AddComment)
+
+		comment.GET("/id/:id", App.GetCommentsById)
+
+		comment.PUT("/:id", App.ModifyCommentByCid)
+
+		comment.DELETE("/:id", App.DeleteCommentByCid)
 	}
 	
 	r.Run(":9999")
