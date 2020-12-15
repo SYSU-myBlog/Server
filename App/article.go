@@ -41,6 +41,9 @@ var (
 func GetAllArticles(c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(nil).All(&articles)
+	for i,article := range articles {
+		articles[i].Aid = fmt.Sprintf("%x", string(article.Aid))
+	}
 	c.JSON(http.StatusOK, &ApiResponse {
 		Code: 200,
 		Type: "success",
@@ -82,6 +85,7 @@ func GetArticleByAid(c *gin.Context) {
 			Message:  "article id does not exist",
 		})
 	} else {
+		tmpArticle.Aid = hexid
 		c.JSON(http.StatusOK, &ApiResponse {
 			Code: 200,
 			Type: "success",
@@ -94,6 +98,9 @@ func GetArticleByAid(c *gin.Context) {
 func GetArticlesByTitle (c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(bson.M{"title": c.Param("title")}).All(&articles)
+	for i,article := range articles {
+		articles[i].Aid = fmt.Sprintf("%x", string(article.Aid))
+	}
 	c.JSON(http.StatusOK, &ApiResponse {
 		Code: 200,
 		Type: "success",
@@ -105,6 +112,9 @@ func GetArticlesByTitle (c *gin.Context) {
 func GetArticlesByTag (c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(bson.M{"tag": c.Param("tag")}).All(&articles)
+	for i,article := range articles {
+		articles[i].Aid = fmt.Sprintf("%x", string(article.Aid))
+	}
 	c.JSON(http.StatusOK, &ApiResponse {
 		Code: 200,
 		Type: "success",
@@ -116,6 +126,9 @@ func GetArticlesByTag (c *gin.Context) {
 func GetArticlesByPublisher (c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(bson.M{"publisher": c.Param("publisher")}).All(&articles)
+	for i,article := range articles {
+		articles[i].Aid = fmt.Sprintf("%x", string(article.Aid))
+	}
 	c.JSON(http.StatusOK, &ApiResponse {
 		Code: 200,
 		Type: "success",

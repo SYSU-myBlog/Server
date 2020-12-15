@@ -167,6 +167,18 @@ func ModifyUserByUid (c *gin.Context) {
 		})
 	} else {
 		//更新
+		if (postUser.Username == "") {
+			postUser.Username = tmpUser.Username
+		}
+		if (postUser.Email == "") {
+			postUser.Email = tmpUser.Email
+		}
+		if (postUser.Password == "") {
+			postUser.Password = tmpUser.Password
+		}
+		if (postUser.Phone == "") {
+			postUser.Phone = tmpUser.Phone
+		}
 		MyuserModel.DB.Update(bson.M{"_id": bson.ObjectIdHex(c.Param("uid"))}, bson.M{"$set": bson.M{
 			"username": postUser.Username,
 			"email": postUser.Email,
