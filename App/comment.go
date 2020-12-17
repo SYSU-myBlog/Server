@@ -48,12 +48,45 @@ func GetCommentsById (c *gin.Context) {
 		for i,comment := range comments {
 			comments[i].Cid = fmt.Sprintf("%x", string(comment.Cid))
 		}
+		//GetAllSonComments(c.Param("id"))
 		c.JSON(http.StatusOK, &ApiResponse {
 			Code: 200,
 			Type: "success",
 			Message:  comments,
 		})
 	}
+}
+
+func GetCommentsByid (id string) []string {
+	var comments []Comment
+	var commentsid []string
+	MycommentModel.DB.Find(bson.M{"id": id}).All(&comments)
+	for i,comment := range comments {
+		comments[i].Cid = fmt.Sprintf("%x", string(comment.Cid))
+		commentsid = append(commentsid, comments[i].Cid)
+	}
+	return commentsid
+}
+
+func GetAllSonComments (id string) []string{
+	var arrstr []string
+	var res []string
+	arrstr = append(arrstr, id)
+	/*for _, v := range arrstr {
+		arrstr = append(arrstr, GetCommentsByid(v)...)
+		res = append(res, GetCommentsByid(v)...)
+		arrstr = arrstr[1:] // 删除开头1个元素
+		fmt.Println(len(arrstr))
+	}*/
+	i := 0
+	res = append(res, id)
+	for ; i < len(arrstr); i++ {
+		res = append(res, GetCommentsByid(arrstr[i])...)
+		arrstr = append(arrstr, GetCommentsByid(arrstr[i])...)	
+		arrstr = arrstr[1:] // 删除开头1个元素
+		i = -1
+	}
+	return res
 }
 
 //发表一条评论
@@ -67,6 +100,17 @@ func AddComment(c *gin.Context) {
 			Message:  "badparam",
 		})
 		return
+	}
+	var tmpUser User
+	MyuserModel.DB.Find(bson.M{"username": comment.Publisher}).One(&tmpUser)
+	hexid := fmt.Sprintf("%x", string(tmpUser.Id))
+	if (hexid == "") {
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 400,
+			Type: "fail",
+			Message:  "publisher does not exist",
+		})
+		return 
 	}
 	var articles []Article
 	var comments []Comment
@@ -90,22 +134,16 @@ func AddComment(c *gin.Context) {
 
 //删除一条评论
 func DeleteCommentByCid (c *gin.Context) {
-	err := MycommentModel.DB.Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("id"))})
-	if err != nil {
-		c.JSON(http.StatusOK, &ApiResponse {
-			Code: 400,
-			Type: "fail",
-			Message:  "",
-		})
-	} else {
-		c.JSON(http.StatusOK, &ApiResponse {
-			Code: 200,
-			Type: "success",
-			Message:  "",
-		})
+	var delecomments []string
+	delecomments = append(delecomments,GetAllSonComments(c.Param("id"))...)
+	for _,v := range delecomments {
+		MycommentModel.DB.Remove(bson.M{"_id": bson.ObjectIdHex(v)})
 	}
-
-
+	c.JSON(http.StatusOK, &ApiResponse {
+		Code: 200,
+		Type: "success",
+		Message:  "",
+	})
 }
 
 //修改一条评论

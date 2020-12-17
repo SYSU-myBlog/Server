@@ -140,7 +140,7 @@ func GetArticlesByPublisher (c *gin.Context) {
 
 //根据Id删除一篇文章
 func DeleteArticleByAid (c *gin.Context) {
-	tmpArticle := Article{}
+	/*tmpArticle := Article{}
 	MyarticleModel.DB.FindId(bson.ObjectIdHex(c.Param("aid"))).One(&tmpArticle)
 	hexid := fmt.Sprintf("%x", string(tmpArticle.Aid))
 	if (hexid == "") {
@@ -156,7 +156,17 @@ func DeleteArticleByAid (c *gin.Context) {
 			Type: "success",
 			Message:  "delete article success",
 		})
+	}*/
+	var delecomments []string
+	delecomments = append(delecomments,GetAllSonComments(c.Param("aid"))...)
+	for _,v := range delecomments {
+		MycommentModel.DB.Remove(bson.M{"_id": bson.ObjectIdHex(v)})
 	}
+	c.JSON(http.StatusOK, &ApiResponse {
+		Code: 200,
+		Type: "success",
+		Message:  "",
+	})
 }
 
 //根据Id修改一篇文章

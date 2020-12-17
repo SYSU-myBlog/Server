@@ -11,7 +11,7 @@ import (
 
 
 const (
-	url string = "172.18.41.232:27017" //mongo数据库连接端口
+	url string = "172.19.34.164:27017" //mongo数据库连接端口
 	//url string = "172.26.43.243:27017" //mongo数据库连接端口
 )
 
@@ -87,6 +87,7 @@ func main() {
 		comment.PUT("/:id", App.ModifyCommentByCid)
 
 		comment.DELETE("/:id", App.DeleteCommentByCid)
+
 	}
 
 	like := r.Group("/like")
