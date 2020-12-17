@@ -138,6 +138,7 @@ func DeleteCommentByCid (c *gin.Context) {
 	delecomments = append(delecomments,GetAllSonComments(c.Param("id"))...)
 	for _,v := range delecomments {
 		MycommentModel.DB.Remove(bson.M{"_id": bson.ObjectIdHex(v)})
+		MylikeModel.DB.Remove(bson.M{"id": v})
 	}
 	c.JSON(http.StatusOK, &ApiResponse {
 		Code: 200,

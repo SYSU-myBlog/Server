@@ -157,11 +157,24 @@ func DeleteArticleByAid (c *gin.Context) {
 			Message:  "delete article success",
 		})
 	}*/
+	tmpArticle := Article{}
+	MyarticleModel.DB.FindId(bson.ObjectIdHex(c.Param("aid"))).One(&tmpArticle)
+	hexid := fmt.Sprintf("%x", string(tmpArticle.Aid))
+	if (hexid == "") {
+		c.JSON(http.StatusOK, &ApiResponse {
+			Code: 400,
+			Type: "fail",
+			Message:  "article id does not exist",
+		})
+		return 
+	}
 	var delecomments []string
 	delecomments = append(delecomments,GetAllSonComments(c.Param("aid"))...)
 	for _,v := range delecomments {
 		MycommentModel.DB.Remove(bson.M{"_id": bson.ObjectIdHex(v)})
+		MylikeModel.DB.Remove(bson.M{"id": v})
 	}
+	MyarticleModel.DB.Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("aid"))})
 	c.JSON(http.StatusOK, &ApiResponse {
 		Code: 200,
 		Type: "success",
