@@ -11,7 +11,8 @@ import (
 
 
 const (
-	url string = "127.0.0.1:27017" //mongo数据库连接端口
+	url string = "172.18.41.232:27017" //mongo数据库连接端口
+	//url string = "172.26.43.243:27017" //mongo数据库连接端口
 )
 
 
@@ -93,6 +94,8 @@ func main() {
 		like.POST("/likeit", App.LikeIt)
 
 		like.DELETE("/:lid", App.UnlikeIt)
+
+		like.GET("/id/:id", App.GetLikesById)
 	}
 	
 	r.Run(":9999")
