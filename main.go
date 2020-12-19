@@ -13,7 +13,7 @@ import (
 
 
 const (
-	url string = "172.18.41.232:27017" //mongo数据库连接端口
+	url string = "127.0.0.1:27017" //mongo数据库连接端口
 	//url string = "172.26.43.243:27017" //mongo数据库连接端口
 )
 
@@ -38,29 +38,13 @@ func initDB() {
 	}
 }
 
-func Authorize() gin.HandlerFunc{
-	return func(c *gin.Context){
-		session := sessions.Default(c)
-		v := session.Get("sessionid")
-		
-		if v != nil {
-			// 验证通过，会继续访问下一个中间件
-			c.Next()
-		} else {
-			// 验证不通过，不再调用后续的函数处理
-			c.Abort()
-			c.JSON(http.StatusUnauthorized,gin.H{"message":"访问未授权"})
-			return
-		}
-	}
-}
-
 func main() {
 	//连接数据库
 	initDB()
 
 	//开启服务器
 	r := gin.Default()
+	r.Use(passjs())
 	store := cookie.NewStore([]byte("secret"))    //change
 	r.Use(sessions.Sessions("sessionid",store))   //change
 	user := r.Group("/user")
@@ -127,4 +111,39 @@ func main() {
 	}
 	
 	r.Run(":9999")
+}
+
+func Authorize() gin.HandlerFunc{
+	return func(c *gin.Context){
+		session := sessions.Default(c)
+		v := session.Get("sessionid")
+		
+		if v != nil {
+			// 验证通过，会继续访问下一个中间件
+			c.Next()
+		} else {
+			// 验证不通过，不再调用后续的函数处理
+			c.Abort()
+			c.JSON(http.StatusUnauthorized,gin.H{"message":"访问未授权"})
+			return
+		}
+	}
+}
+
+// 中间件,主要处理js访问时的跨域问题
+func passjs() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// gin设置响应头，设置跨域
+	   c.Header("Access-Control-Allow-Origin", "*")
+	   c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	   c.Header("Access-Control-Allow-Headers", "Action, Module, X-PINGOTHER, Content-Type, Content-Disposition")
+	   if (c.Request.Method == "OPTIONS") {
+		   c.JSON(200, &App.ApiResponse {
+			   Code: 200,
+		   })
+		   return
+	   }
+	   // c.Next()后就执行真实的路由函数
+		c.Next()
+	}
 }
