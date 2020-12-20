@@ -48,7 +48,7 @@ func main() {
 	//store := cookie.NewStore([]byte("secret"))    //change
 	//r.Use(sessions.Sessions("sessionid",store))   //change
 	r.Use(passjs())
-	r.GET("/setcookie", writeCookie)
+	//r.GET("/setcookie", writeCookie)
 	user := r.Group("/user")
 	{
 		user.POST("/register", App.RegisterUser)
@@ -142,16 +142,16 @@ func passjs() gin.HandlerFunc {
 		// gin设置响应头，设置跨域
 
 	   c.Header("Access-Control-Allow-Origin", "*")
-	   c.Header("Access-Control-Allow-Credentials","true")
+	   //c.Header("Access-Control-Allow-Credentials","true")
 	   c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	   c.Header("Access-Control-Allow-Headers", "*")
 	   if (c.Request.Method == "OPTIONS") {
 		// session := sessions.Default(c)
 		// session.Set("sessionid", 123456)       //change
 		// session.Save()                             //change
-		session := sessions.Default(c)
-		v := session.Get("sessionid")
-		fmt.Println(v)
+		//session := sessions.Default(c)
+		//v := session.Get("sessionid")
+		//fmt.Println(v)
 		   c.JSON(200, &App.ApiResponse {
 			   Code: 200,
 		   })
