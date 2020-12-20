@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type Article struct {
@@ -54,6 +55,7 @@ func GetAllArticles(c *gin.Context) {
 //发表一篇文章
 func PublishArticle(c *gin.Context) {
 	//解析post的数据存到postArticle内
+	
 	con,_ := ioutil.ReadAll(c.Request.Body) //获取post的数据
 	postArticle := Article_notPublished{}
 	json.Unmarshal(con, &postArticle)
@@ -112,6 +114,22 @@ func GetArticlesByTitle (c *gin.Context) {
 func GetArticlesByTag (c *gin.Context) {
 	articles := []Article{}
 	MyarticleModel.DB.Find(bson.M{"tag": c.Param("tag")}).All(&articles)
+	for i,article := range articles {
+		articles[i].Aid = fmt.Sprintf("%x", string(article.Aid))
+	}
+	c.JSON(http.StatusOK, &ApiResponse {
+		Code: 200,
+		Type: "success",
+		Message:  &articles,
+	})
+}
+
+// 拿到一页的文章
+func GetPage (c *gin.Context) {
+	page,_ := strconv.Atoi(c.Query("page"))
+	eachPage,_ := strconv.Atoi(c.Query("eachPage"))
+	articles := []Article{}
+	MyarticleModel.DB.Find(nil).Skip((page - 1) * eachPage).Limit(eachPage).All(&articles)
 	for i,article := range articles {
 		articles[i].Aid = fmt.Sprintf("%x", string(article.Aid))
 	}
@@ -232,3 +250,4 @@ func ModifyArticleByAid (c *gin.Context) {
 		
 	
 }
+

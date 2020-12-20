@@ -3,12 +3,12 @@ package main
 import (
 	"github.com/globalsign/mgo"
 	//"github.com/globalsign/mgo/bson"
-	//"fmt"
+	"fmt"
 	"App"
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	//"github.com/gin-contrib/sessions/cookie"
 )
 
 
@@ -44,9 +44,11 @@ func main() {
 
 	//开启服务器
 	r := gin.Default()
+	
+	//store := cookie.NewStore([]byte("secret"))    //change
+	//r.Use(sessions.Sessions("sessionid",store))   //change
 	r.Use(passjs())
-	store := cookie.NewStore([]byte("secret"))    //change
-	r.Use(sessions.Sessions("sessionid",store))   //change
+	r.GET("/setcookie", writeCookie)
 	user := r.Group("/user")
 	{
 		user.POST("/register", App.RegisterUser)
@@ -57,7 +59,7 @@ func main() {
 
 		user.GET("/uid/:uid", App.GetUserByUid)
 
-		user.Use(Authorize())
+		//user.Use(Authorize())
 
 		user.PUT("/:uid", App.ModifyUserByUid)
 
@@ -65,6 +67,8 @@ func main() {
 
 	article := r.Group("/article")
 	{
+		article.GET("/", App.GetPage)
+
 		article.GET("/all", App.GetAllArticles)
 
 		article.GET("/aid/:aid", App.GetArticleByAid)
@@ -75,7 +79,7 @@ func main() {
 
 		article.GET("/publisher/:publisher", App.GetArticlesByPublisher)
 
-		article.Use(Authorize())
+		//article.Use(Authorize())
 
 		article.POST("/publish", App.PublishArticle)
 
@@ -89,7 +93,7 @@ func main() {
 	{
 		comment.GET("/id/:id", App.GetCommentsById)
 
-		comment.Use(Authorize())
+		//comment.Use(Authorize())
 
 		comment.POST("/publish", App.AddComment)
 
@@ -101,13 +105,14 @@ func main() {
 
 	like := r.Group("/like")
 	{
-		like.Use(Authorize())
+		like.GET("/id/:id", App.GetLikesById)
+		//like.Use(Authorize())
 
 		like.POST("/likeit", App.LikeIt)
 
 		like.DELETE("/:lid", App.UnlikeIt)
 
-		like.GET("/id/:id", App.GetLikesById)
+		
 	}
 	
 	r.Run(":9999")
@@ -117,7 +122,7 @@ func Authorize() gin.HandlerFunc{
 	return func(c *gin.Context){
 		session := sessions.Default(c)
 		v := session.Get("sessionid")
-		
+		fmt.Println(v)
 		if v != nil {
 			// 验证通过，会继续访问下一个中间件
 			c.Next()
@@ -133,11 +138,20 @@ func Authorize() gin.HandlerFunc{
 // 中间件,主要处理js访问时的跨域问题
 func passjs() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		
 		// gin设置响应头，设置跨域
+
 	   c.Header("Access-Control-Allow-Origin", "*")
+	   c.Header("Access-Control-Allow-Credentials","true")
 	   c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	   c.Header("Access-Control-Allow-Headers", "Action, Module, X-PINGOTHER, Content-Type, Content-Disposition")
+	   c.Header("Access-Control-Allow-Headers", "*")
 	   if (c.Request.Method == "OPTIONS") {
+		// session := sessions.Default(c)
+		// session.Set("sessionid", 123456)       //change
+		// session.Save()                             //change
+		session := sessions.Default(c)
+		v := session.Get("sessionid")
+		fmt.Println(v)
 		   c.JSON(200, &App.ApiResponse {
 			   Code: 200,
 		   })
@@ -146,4 +160,16 @@ func passjs() gin.HandlerFunc {
 	   // c.Next()后就执行真实的路由函数
 		c.Next()
 	}
+}
+
+
+ 
+
+func writeCookie(c *gin.Context) {
+	// cookie := http.Cookie{Name:"name", Value:"Shimin Li", Path:"/", MaxAge:60}
+	// http.SetCookie(c.Writer, &cookie)
+	// c.Writer.Write([]byte("write cookie ok"))
+	session := sessions.Default(c)
+	session.Set("sessionid", 123456)       //change
+	session.Save()                             //change
 }

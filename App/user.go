@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/sessions"
+	//"github.com/gin-contrib/sessions"
 )
 
 type UserModel struct {
@@ -81,9 +81,9 @@ func RegisterUser(c *gin.Context) {
 
 //用户登陆
 func LoginUser (c *gin.Context) {
-	session := sessions.Default(c)                //change
-	option := sessions.Options{MaxAge: 3600, Path: "/"}      //change
-	session.Options(option)                       //change
+	//session := sessions.Default(c)                //change
+	//option := sessions.Options{MaxAge: 3600, Path: "/",Domain:"localhost",HttpOnly:false,Secure:false}      //change
+	//session.Options(option)                       //change
 	//解析post的数据存到postUser内
 	con,_ := ioutil.ReadAll(c.Request.Body) //获取post的数据
 	postUser := User{}
@@ -100,8 +100,9 @@ func LoginUser (c *gin.Context) {
 			Message:  "username and password do not match",
 		})
 	} else {
-		session.Set("sessionid", tmpUser.Id)       //change
-		session.Save()                             //change
+		
+		//session.Set("sessionid", hexid)       //change
+		//session.Save()                             //change
 		c.JSON(http.StatusOK, &ApiResponse {
 			Code: 200,
 			Type: "success",
