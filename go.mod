@@ -1,4 +1,5 @@
-module example
+//module example
+module github.com/SYSU-myBlog/Server
 
 go 1.13
 
