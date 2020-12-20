@@ -4,8 +4,8 @@ module github.com/SYSU-myBlog/Server
 go 1.13
 
 require (
-	App v0.0.0
 	github.com/Joker/jade v1.0.0 // indirect
+	github.com/SYSU-myBlog/Server/App v0.0.0
 	github.com/Shopify/goreferrer v0.0.0-20181106222321-ec9c9a553398 // indirect
 	github.com/aymerick/raymond v2.0.2+incompatible // indirect
 	github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385 // indirect
@@ -40,4 +40,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace App => ./App
+replace github.com/SYSU-myBlog/Server/App => ./App
