@@ -1,5 +1,5 @@
 ## myBlog 服务端
-### 安装
+### 安装服务端
 `go get github.com/SYSU-myBlog/Server`
 
 如果出现以下报错信息：
@@ -15,7 +15,18 @@ go get: github.com/SYSU-myBlog/Server@v0.0.0-20201220135209-8db1989bc9ba require
 
 如果仍然不行，则直接clone仓库到本地。
 
+### 安装和配置mongodb数据库
+ubuntu mongodb安装和使用
+[https://www.cnblogs.com/weihu/p/8570083.html](https://www.cnblogs.com/weihu/p/8570083.html)
+
+使用默认配置即可
+
+然后创建一个新的数据库，命名为myblog，在该数据库下新建四个表格，分别为user、article、comment、like。
+
+如果想要有自己的数据库设置，可以查看以下main.go文件，在其中相应地作修改即可。
+
 ### 运行
 进入Server文件夹，`go run main.go`
+
 
 
